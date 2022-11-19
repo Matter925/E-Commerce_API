@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Level 4\\Ecommerce\\Ecommerce\\Ecommerce.csproj": {}
+    "E:\\Level 4\\ECom\\Project\\Ecommerce\\Ecommerce\\Ecommerce.csproj": {}
   },
   "projects": {
-    "E:\\Level 4\\Ecommerce\\Ecommerce\\Ecommerce.csproj": {
+    "E:\\Level 4\\ECom\\Project\\Ecommerce\\Ecommerce\\Ecommerce.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Level 4\\Ecommerce\\Ecommerce\\Ecommerce.csproj",
+        "projectUniqueName": "E:\\Level 4\\ECom\\Project\\Ecommerce\\Ecommerce\\Ecommerce.csproj",
         "projectName": "Ecommerce",
-        "projectPath": "E:\\Level 4\\Ecommerce\\Ecommerce\\Ecommerce.csproj",
+        "projectPath": "E:\\Level 4\\ECom\\Project\\Ecommerce\\Ecommerce\\Ecommerce.csproj",
         "packagesPath": "C:\\Users\\MATTER\\.nuget\\packages\\",
-        "outputPath": "E:\\Level 4\\Ecommerce\\Ecommerce\\obj\\",
+        "outputPath": "E:\\Level 4\\ECom\\Project\\Ecommerce\\Ecommerce\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
