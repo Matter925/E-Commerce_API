@@ -6,5 +6,7 @@ namespace Ecommerce.Dto
     {
         [Required]
         public string Name { get; set; }
+        [Required]
+        public string ImageURL { get; set; }
     }
 }

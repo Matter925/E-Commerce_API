@@ -48,6 +48,17 @@ namespace Ecommerce.Repositories
             return await _context.Products.Where(e => e.CategoryId == categoryId).Include(c=>c.Category).ToListAsync();
         }
 
+        public async Task<IEnumerable<Product>> Search(string Name)
+        {
+            IQueryable<Product> query = _context.Products;
+            if(!string.IsNullOrEmpty(Name))
+            {
+                query = query.Where(e => e.Name.Contains(Name)).OrderByDescending(m => m.Price)
+               .Include(m => m.Category);
+            }
+            return await query.ToListAsync();
+        }
+
         public async Task<Product> Update(Product product)
         {
              _context.Products.Update(product);

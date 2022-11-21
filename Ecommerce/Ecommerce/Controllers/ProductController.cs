@@ -35,17 +35,17 @@ namespace Ecommerce.Controllers
             return Ok(product);
         }
 
-        [HttpGet("GetByCategoryId")]
+        [HttpGet("GetByCategoryId/{categoryId}")]
         public async Task<IActionResult> GetProductsByCatId(int categoryId)
         {
             var products = await _productRepository.GetProductsByCategory(categoryId);
-            
+
 
             return Ok(products);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct([FromForm] ProductDto dto)
+        public async Task<IActionResult> AddProduct([FromBody] ProductDto dto)
         {
             if(!ModelState.IsValid)
                 return BadRequest();
@@ -63,7 +63,7 @@ namespace Ecommerce.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] ProductDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] ProductDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -96,6 +96,20 @@ namespace Ecommerce.Controllers
 
             return Ok(product);
         }
+
+        [HttpGet("Search/{name}")]
+        public async Task<IActionResult> Search(string name)
+        {
+            var products = await _productRepository.Search(name);
+            if(products.Any())
+            {
+                return Ok(products);
+            }
+            return NotFound();
+
+        }
+
+
 
 
 

@@ -1,6 +1,7 @@
 ﻿using Ecommerce.Dto;
 using Ecommerce.Models;
 using Ecommerce.Repositories.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace Ecommerce.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+   
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
@@ -26,11 +28,14 @@ namespace Ecommerce.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCategory(CategoryDto dto)
+        public async Task<IActionResult> AddCategory([FromBody] CategoryDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            var category = new Category { Name = dto.Name };
+            var category = new Category {
+                Name = dto.Name ,
+                ImageURL = dto.ImageURL ,
+            };
 
             await _categoryRepository.Add(category);
 

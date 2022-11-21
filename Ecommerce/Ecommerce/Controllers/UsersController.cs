@@ -24,8 +24,9 @@ namespace Ecommerce.Controllers
         {
             _userService = userService;
         }
-        [AllowAnonymous]
+        
         [HttpPost("Register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterDto register)
         {
             if(!ModelState.IsValid)
@@ -41,8 +42,9 @@ namespace Ecommerce.Controllers
 
         
 
-        [AllowAnonymous]
+        
         [HttpPost("Login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto login)
         {
             if (!ModelState.IsValid)
@@ -58,7 +60,7 @@ namespace Ecommerce.Controllers
             return Ok(result);
 
         }
-        [AllowAnonymous]
+       
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
         {
