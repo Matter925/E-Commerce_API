@@ -26,7 +26,7 @@ namespace Ecommerce.Controllers
 
             return Ok(categories);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddCategory([FromBody] CategoryDto dto)
         {
@@ -35,13 +35,14 @@ namespace Ecommerce.Controllers
             var category = new Category {
                 Name = dto.Name ,
                 ImageURL = dto.ImageURL ,
+                IsActive = dto.IsActive ,
             };
 
             await _categoryRepository.Add(category);
 
             return Ok(category);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] CategoryDto dto)
         {
@@ -59,6 +60,7 @@ namespace Ecommerce.Controllers
             return Ok(category);
         }
 
+        [Authorize(Roles ="Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

@@ -8,6 +8,7 @@ namespace Ecommerce.Models
         [MaxLength(100)]
          public string Name { get; set; }
         public string ImageURL { get; set; }
+        public Boolean IsActive { get; set; }
 
     }
 }

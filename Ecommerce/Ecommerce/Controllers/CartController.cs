@@ -1,11 +1,13 @@
 ﻿using Ecommerce.Dto;
 using Ecommerce.Repositories;
 using Ecommerce.Repositories.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CartController : ControllerBase
@@ -18,7 +20,7 @@ namespace Ecommerce.Controllers
             _productRepository = productRepository;
         }
         [HttpGet]
-        [Route("{userId}/GetItems")]
+        [Route("GetItems/{userId}")]
         public async Task<ActionResult<IEnumerable<CartItemDto>>> GetItems(string userId)
         {
             var cartItems = await _cartRepository.GetItems(userId);
@@ -148,7 +150,7 @@ namespace Ecommerce.Controllers
             
         }
 
-        [HttpPatch("{cartItemId:int}")]
+        [HttpPut("{cartItemId:int}")]
         public async Task<ActionResult<CartItemDto>> UpdateQty(int cartItemId, CartItemQtyUpdateDto cartItemQtyUpdateDto)
         {
            

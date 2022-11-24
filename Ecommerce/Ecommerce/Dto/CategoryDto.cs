@@ -8,5 +8,8 @@ namespace Ecommerce.Dto
         public string Name { get; set; }
         [Required]
         public string ImageURL { get; set; }
+
+        [Required]
+        public Boolean IsActive { get; set; }
     }
 }

@@ -92,6 +92,7 @@ namespace Ecommerce.Controllers
         //        return BadRequest(result.Errors);
         //    }
         //}
+        [Authorize(Roles = "Admin")]
         [HttpPost("AssignRole")]
         public async Task<IActionResult> AssignRole(AssignRoleDto assignRole)
         {

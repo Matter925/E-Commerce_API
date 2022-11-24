@@ -1,6 +1,7 @@
 ﻿using Ecommerce.Dto;
 using Ecommerce.Models;
 using Ecommerce.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,7 +44,7 @@ namespace Ecommerce.Controllers
 
             return Ok(products);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] ProductDto dto)
         {
@@ -56,12 +57,13 @@ namespace Ecommerce.Controllers
                 Description = dto.Description,
                 ImageURL = dto.ImageURL ,
                 CategoryId = dto.CategoryId,
+                
             };
             _productRepository.Add(product);
 
             return Ok(product);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ProductDto dto)
         {
@@ -83,7 +85,7 @@ namespace Ecommerce.Controllers
 
             return Ok(product);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
