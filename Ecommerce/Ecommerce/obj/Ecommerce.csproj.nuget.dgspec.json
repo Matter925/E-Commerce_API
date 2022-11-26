@@ -44,6 +44,10 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "BouncyCastle.NetCore": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[6.0.10, )"
@@ -71,6 +75,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.2.3, )"
+            },
+            "System.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[2.0.2.45, )"
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",

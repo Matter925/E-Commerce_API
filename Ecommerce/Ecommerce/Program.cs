@@ -3,6 +3,7 @@ using Ecommerce.Models;
 using Ecommerce.Repositories;
 using Ecommerce.Repositories.IRepository;
 using Ecommerce.Services;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -49,6 +51,26 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
+
+
+//Access from real device
+//var host = new WebHostBuilder()
+//  .UseKestrel()
+//  .UseContentRoot(Directory.GetCurrentDirectory())
+//  .UseUrls("http://192.168.1.2:5000")
+//  .UseIISIntegration()
+//  .UseStartup<Startup>()
+//  .Build();
+
+//host.Run();
+
+
+//var host = WebHost.CreateDefaultBuilder(args)
+//			 .UseUrls("http://192.168.1.2:5000")
+//			 .UseStartup<Startup>()
+//			 .Build();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

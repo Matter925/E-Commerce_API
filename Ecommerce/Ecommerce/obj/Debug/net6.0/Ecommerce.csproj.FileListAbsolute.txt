@@ -136,3 +136,5 @@ E:\Level 4\ECom\Project\Ecommerce\Ecommerce\obj\Debug\net6.0\refint\Ecommerce.dl
 E:\Level 4\ECom\Project\Ecommerce\Ecommerce\obj\Debug\net6.0\Ecommerce.pdb
 E:\Level 4\ECom\Project\Ecommerce\Ecommerce\obj\Debug\net6.0\Ecommerce.genruntimeconfig.cache
 E:\Level 4\ECom\Project\Ecommerce\Ecommerce\obj\Debug\net6.0\ref\Ecommerce.dll
+E:\Level 4\ECom\Project\Ecommerce\Ecommerce\bin\Debug\net6.0\BouncyCastle.Crypto.dll
+E:\Level 4\ECom\Project\Ecommerce\Ecommerce\bin\Debug\net6.0\System.Configuration.Abstractions.NetStandard.dll
