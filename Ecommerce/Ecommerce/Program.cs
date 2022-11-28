@@ -57,7 +57,7 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 //var host = new WebHostBuilder()
 //  .UseKestrel()
 //  .UseContentRoot(Directory.GetCurrentDirectory())
-//  .UseUrls("http://192.168.1.2:5000")
+//  .UseUrls("http://0.0.0.0:5000")
 //  .UseIISIntegration()
 //  .UseStartup<Startup>()
 //  .Build();

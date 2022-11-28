@@ -84,9 +84,9 @@ namespace Ecommerce.Repositories
                          }).ToListAsync();
         }
 
-        public async Task<CartItem> UpdateQty(int cartItemId, CartItemQtyUpdateDto cartItemQtyUpdateDto)
+        public async Task<CartItem> UpdateQty(CartItemQtyUpdateDto cartItemQtyUpdateDto)
         {
-            var item = await _context.CartItems.FindAsync(cartItemId);
+            var item = await _context.CartItems.FindAsync(cartItemQtyUpdateDto.CartItemId);
 
             if (item != null)
             {

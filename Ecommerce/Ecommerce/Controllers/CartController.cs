@@ -150,11 +150,11 @@ namespace Ecommerce.Controllers
             
         }
 
-        [HttpPut("{cartItemId:int}")]
-        public async Task<ActionResult<CartItemDto>> UpdateQty(int cartItemId, CartItemQtyUpdateDto cartItemQtyUpdateDto)
+        [HttpPut]
+        public async Task<ActionResult<CartItemDto>> UpdateQty(CartItemQtyUpdateDto cartItemQtyUpdateDto)
         {
            
-                var cartItem = await _cartRepository.UpdateQty(cartItemId, cartItemQtyUpdateDto);
+                var cartItem = await _cartRepository.UpdateQty(cartItemQtyUpdateDto);
                 if (cartItem == null)
                 {
                     return NotFound();
