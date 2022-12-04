@@ -65,6 +65,8 @@ namespace Ecommerce.Services
             authModel.Message = "User Login successfully ";
             authModel.IsAuthenticated = true;
             authModel.Id = user.Id;
+            authModel.FirstName = user.FirstName;
+             authModel. LastName = user.LastName ;  
             authModel.CartId = user.Cart.Id;
             authModel.Email = user.Email;
             authModel.Username = user.UserName;
@@ -90,8 +92,6 @@ namespace Ecommerce.Services
 
         }
 
-        
-
         public async Task<AuthModel> RegisterAsync(RegisterDto register )
         {
             if (await _userManager.FindByEmailAsync(register.Email) != null)
@@ -103,7 +103,7 @@ namespace Ecommerce.Services
                 Email = register.Email,
                 FirstName = register.FirstName,
                 LastName = register.LastName,
-                UserName = register.Email,
+                UserName = register.Username,
                 Address = register.Address,
                 PhoneNumber = register.PhoneNumber,
 
@@ -137,8 +137,10 @@ namespace Ecommerce.Services
             return new AuthModel
             {
                 Message = "User Registered successfully ",
-                Email = user.Email,
                 Id = user.Id,
+                Email = user.Email,
+               FirstName = user.FirstName,
+               LastName = user.LastName,    
                 Username = user.UserName,
                 CartId = user.Cart.Id,
                 ExpireOn = jwtSecurityToken.ValidTo,
@@ -286,6 +288,8 @@ namespace Ecommerce.Services
             await _userManager.UpdateAsync(user);
             authModel.Message = "Password  Successfully Changed";
             authModel.Id = user.Id;
+            authModel.FirstName = user.FirstName;
+            authModel.LastName = user.LastName; 
             authModel.Email = user.Email;
             authModel.Username = user.UserName;
             authModel.IsAuthenticated = true;

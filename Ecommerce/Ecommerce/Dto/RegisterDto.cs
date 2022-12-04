@@ -17,6 +17,7 @@ namespace Ecommerce.Models
         public string PhoneNumber { get; set; }
 
         [Required, StringLength(100)]
+       
         public string Password { get; set; }
         public string Address { get; set; }
     }

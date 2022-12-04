@@ -1,5 +1,7 @@
+
 using Ecommerce.Data;
 using Ecommerce.Models;
+
 using Ecommerce.Repositories;
 using Ecommerce.Repositories.IRepository;
 using Ecommerce.Services;
@@ -7,10 +9,12 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
@@ -43,6 +47,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+
+
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -53,22 +60,6 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 
 
-//Access from real device
-//var host = new WebHostBuilder()
-//  .UseKestrel()
-//  .UseContentRoot(Directory.GetCurrentDirectory())
-//  .UseUrls("http://0.0.0.0:5000")
-//  .UseIISIntegration()
-//  .UseStartup<Startup>()
-//  .Build();
-
-//host.Run();
-
-
-//var host = WebHost.CreateDefaultBuilder(args)
-//			 .UseUrls("http://192.168.1.2:5000")
-//			 .UseStartup<Startup>()
-//			 .Build();
 
 
 var app = builder.Build();
