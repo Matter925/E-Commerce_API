@@ -97,5 +97,23 @@ namespace Ecommerce.Repositories
 
             return null;
         }
+
+        public async Task<IEnumerable<CartItem>> DeleteAll(int cartId)
+        {
+            var item = await _context.CartItems.Where(e => e.CartId == cartId).ToListAsync();
+
+            if (item.Any() )
+            {
+                foreach (var ex in item)
+                {
+                    _context.CartItems.Remove(ex);
+                }
+                await _context.SaveChangesAsync();
+                return item;
+            }
+
+            return null;
+
+        }
     }
 }

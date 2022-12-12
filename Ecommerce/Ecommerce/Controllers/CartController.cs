@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CartController : ControllerBase
@@ -19,6 +19,7 @@ namespace Ecommerce.Controllers
             _cartRepository = cartRepository;
             _productRepository = productRepository;
         }
+        [Authorize]
         [HttpGet]
         [Route("GetItems/{userId}")]
         public async Task<ActionResult<IEnumerable<CartItemDto>>> GetItems(string userId)
@@ -50,8 +51,8 @@ namespace Ecommerce.Controllers
 
 
         }
-
-        [HttpGet("{cartItemId:int}")]
+        [Authorize]
+        [HttpGet("GetItem/{cartItemId}")]
         public async Task<ActionResult<CartItemDto>> GetItem(int cartItemId)
         {
 
@@ -81,8 +82,8 @@ namespace Ecommerce.Controllers
 
 
         }
-
-        [HttpPost]
+        [Authorize]
+        [HttpPost("AddItem")]
         public async Task<ActionResult<CartItemDto>> AddItem([FromBody] CartItemAddDto cartItemAddDto)
         {
            var newCartItem = await _cartRepository.AddItem(cartItemAddDto);
@@ -115,22 +116,23 @@ namespace Ecommerce.Controllers
 
 
         }
-        [HttpDelete("{cartItemId:int}")]
+        [Authorize]
+        [HttpDelete("DeleteItem/{cartItemId}")]
         public async Task<ActionResult<CartItemDto>> DeleteItem(int cartItemId)
 
         {
-            
-                var cartItem = await _cartRepository.DeleteItem(cartItemId);
 
-                if (cartItem == null)
-                {
-                    return NotFound();
-                }
+            var cartItem = await _cartRepository.DeleteItem(cartItemId);
 
-                var product = await this._productRepository.GetById(cartItem.ProductId);
+            if (cartItem == null)
+            {
+                return NotFound();
+            }
 
-                if (product == null)
-                    return NotFound();
+            var product = await this._productRepository.GetById(cartItem.ProductId);
+
+            if (product == null)
+                return NotFound();
 
             return new CartItemDto
             {
@@ -145,12 +147,24 @@ namespace Ecommerce.Controllers
                 TotalPrice = product.Price * cartItem.Qty
 
             };
-
-            
-            
         }
+         [HttpDelete("DeleteAll/{cartId}")]
+        public async Task<ActionResult<CartItemDto>> DeleteAll(int cartId)
+        {
 
-        [HttpPut]
+                var cartItem = await _cartRepository.DeleteAll(cartId);
+
+                if (cartItem == null)
+                {
+                return BadRequest("Wrong thing");
+                
+               
+                }
+            return Ok("Items successfully deleted");
+
+        }
+        [Authorize]
+        [HttpPut("UpdateQtyItem")]
         public async Task<ActionResult<CartItemDto>> UpdateQty(CartItemQtyUpdateDto cartItemQtyUpdateDto)
         {
            
