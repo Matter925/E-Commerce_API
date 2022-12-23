@@ -2,6 +2,7 @@
 - Using C# , Asp.Net Core 6 Api .
 - SQL Server .
 - Identity Using JWT.
+- Authentication and Authorization .
 - Using Repository Pattern .
 - It consists of many activities  such as
    - Categories operations
