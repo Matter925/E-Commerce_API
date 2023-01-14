@@ -16,6 +16,8 @@ namespace Ecommerce.Models
         public List<RefreshToken>? RefreshTokens { get; set; }
 
         public Cart Cart { get; set; }
+
+        public Favorite Favorite { get; set; }
         
     }
 }

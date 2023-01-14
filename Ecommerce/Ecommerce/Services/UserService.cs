@@ -53,7 +53,7 @@ namespace Ecommerce.Services
         {
             var authModel = new AuthModel();
             
-            var user = await _userManager.FindByNameAsync(login.Email);
+            var user = await _userManager.FindByEmailAsync(login.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, login.Password))
             {
                 authModel.Message = "Email or Password is incorrect !".ToString();
@@ -68,6 +68,7 @@ namespace Ecommerce.Services
             authModel.FirstName = user.FirstName;
              authModel. LastName = user.LastName ;  
             authModel.CartId = user.Cart.Id;
+            authModel.FavoriteId = user.Favorite.Id;
             authModel.Email = user.Email;
             authModel.Username = user.UserName;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
@@ -130,6 +131,11 @@ namespace Ecommerce.Services
                 UserId = user.Id,
 
             };
+            var addFavorite = new Favorite
+            {
+                UserId = user.Id,
+            };
+            await _context.Favorites.AddAsync(addFavorite);
             await _context.Carts.AddAsync(addCart);
             _context.SaveChanges();
 
@@ -143,6 +149,7 @@ namespace Ecommerce.Services
                LastName = user.LastName,    
                 Username = user.UserName,
                 CartId = user.Cart.Id,
+                FavoriteId = user.Favorite.Id,
                 ExpireOn = jwtSecurityToken.ValidTo,
                 IsAuthenticated = true,
                 Roles = new List<string> { "User" },

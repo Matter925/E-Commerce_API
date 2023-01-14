@@ -16,6 +16,7 @@ namespace Ecommerce.Models
         public List<string> Roles { get; set; }
 
         public int CartId { get; set; }
+        public int FavoriteId { get; set; }
         public string Token { get; set; }
 
         public DateTime ExpireOn { get; set; }
