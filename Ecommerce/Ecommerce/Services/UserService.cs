@@ -62,13 +62,14 @@ namespace Ecommerce.Services
             var jwtSecurityToken = await CreateJwtToken(user);
             var rolesList = await _userManager.GetRolesAsync(user);
             var CartUser = await _context.Carts.SingleOrDefaultAsync(c => c.UserId == user.Id);
+            var favoriteId = await _context.Favorites.SingleOrDefaultAsync(c => c.UserId == user.Id);
             authModel.Message = "User Login successfully ";
             authModel.IsAuthenticated = true;
             authModel.Id = user.Id;
             authModel.FirstName = user.FirstName;
              authModel. LastName = user.LastName ;  
             authModel.CartId = user.Cart.Id;
-            authModel.FavoriteId = user.Favorite.Id;
+            authModel.FavoriteId = favoriteId.Id;
             authModel.Email = user.Email;
             authModel.Username = user.UserName;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
@@ -97,7 +98,7 @@ namespace Ecommerce.Services
         {
             if (await _userManager.FindByEmailAsync(register.Email) != null)
                 return new AuthModel { Message = " Email is already registered !!" };
-            if (await _userManager.FindByEmailAsync(register.Username) != null)
+            if (await _userManager.FindByNameAsync(register.Username) != null)
                 return new AuthModel { Message = " Username is already registered !!" };
             var user = new ApplicationUser
             {
@@ -308,6 +309,72 @@ namespace Ecommerce.Services
             authModel.RefreshToken = refreshToken.Token;
             authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
             return authModel;
+
+        }
+
+        public async Task<AuthModel> UpdateProfile(string email ,UpdateProfileDto upProfile)
+        {
+            var authModel = new AuthModel();
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user != null)
+            {
+                user.FirstName = upProfile.FirstName;
+                user.LastName = upProfile.LastName;
+                user.PhoneNumber = upProfile.PhoneNumber;
+                user.Address = upProfile.Address;
+                var result = await _userManager.UpdateAsync(user);
+                
+                if (!result.Succeeded)
+                {
+                    var errors = string.Empty;
+                    foreach (var error in result.Errors)
+                    {
+                        errors += $"{error.Description} , ";
+                    }
+                    return new AuthModel { Message = errors, IsAuthenticated = false };
+
+                }
+                var jwtSecurityToken = await CreateJwtToken(user);
+                var refreshToken = GenerateRefreshToken();
+                user.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(user);
+                authModel.Message = "Profile Updated  Successfully ";
+                authModel.Id = user.Id;
+                authModel.FirstName = user.FirstName;
+                authModel.LastName = user.LastName;
+                authModel.Email = user.Email;
+                authModel.Username = user.UserName;
+                authModel.IsAuthenticated = true;
+
+                authModel.ExpireOn = jwtSecurityToken.ValidTo;
+
+                authModel.Roles = new List<string> { "User" };
+                authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+                authModel.RefreshToken = refreshToken.Token;
+                authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
+                return authModel;
+
+            }
+            return null;
+        }
+
+        public async Task<GetUserDto> GetUser(string email)
+        {
+            var user = await _userManager.FindByNameAsync(email);
+            if (user == null)
+                return new GetUserDto { isNotNull = false };
+            return new GetUserDto
+            {
+                isNotNull = true,
+                Id = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Username = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address,
+            };
+
 
         }
     }

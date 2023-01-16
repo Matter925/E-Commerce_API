@@ -1,25 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Ecommerce.Models
+namespace Ecommerce.Dto
 {
-    public class RegisterDto
+    public class UpdateProfileDto
     {
-        [Required , StringLength(100)]
+        
+        [Required, StringLength(100)]
         public string FirstName { get; set; }
         [Required, StringLength(100)]
         public string LastName { get; set; }
-
-        [Required, StringLength(100)]
-        public string Username { get; set; }
-        [Required, StringLength(100)]
-        [EmailAddress]
-        public string Email { get; set; }
         [Phone]
         public string PhoneNumber { get; set; }
 
         [Required, StringLength(100)]
-       
-        public string Password { get; set; }
         public string Address { get; set; }
     }
 }

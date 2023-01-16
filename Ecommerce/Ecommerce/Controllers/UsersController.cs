@@ -10,11 +10,12 @@ using System.Text;
 using Ecommerce.Helpers;
 using Microsoft.Extensions.Options;
 using Ecommerce.Services;
+using Ecommerce.Dto;
 
 namespace Ecommerce.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -40,9 +41,6 @@ namespace Ecommerce.Controllers
             return Ok(result);
         }
 
-        
-
-        
         [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto login)
@@ -60,6 +58,17 @@ namespace Ecommerce.Controllers
             return Ok(result);
 
         }
+
+        [HttpGet("GetUserData/{email}")]
+        public async Task<IActionResult> GetUser(string email)
+        {
+            var user = await _userService.GetUser(email);
+            if (user.isNotNull)
+            {
+                return Ok(user);
+            }
+            return NotFound("Email is incorrect or not found !!");
+        }
        
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
@@ -71,6 +80,23 @@ namespace Ecommerce.Controllers
             if (!result.IsAuthenticated)
                 return BadRequest(result.Message);
             return Ok(result);
+        }
+
+        [HttpPost("UpdateProfile/{email}")]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileDto upProfile , string email)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var result = await _userService.UpdateProfile(email ,upProfile );
+            if(result != null)
+            {
+                if (!result.IsAuthenticated)
+                    return BadRequest(result.Message);
+                return Ok(result);
+            }
+            return NotFound("Email is incorrect or not found !!");
+            
         }
 
         //[HttpPost("CreateRole")]
