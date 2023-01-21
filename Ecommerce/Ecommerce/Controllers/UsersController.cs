@@ -70,13 +70,13 @@ namespace Ecommerce.Controllers
             return NotFound("Email is incorrect or not found !!");
         }
        
-        [HttpPost("ChangePassword")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
+        [HttpPost("ChangePassword/{email}")]
+        public async Task<IActionResult> ChangePassword(string email ,ChangePasswordDto model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _userService.ChangePassword(model);
+            var result = await _userService.ChangePassword(email,model);
             if (!result.IsAuthenticated)
                 return BadRequest(result.Message);
             return Ok(result);
@@ -97,6 +97,33 @@ namespace Ecommerce.Controllers
             }
             return NotFound("Email is incorrect or not found !!");
             
+        }
+        [HttpGet("GetProfileToUpdate/{email}")]
+        public async Task<IActionResult> GetProfileData(string email)
+        {
+            var result = await _userService.GetProfileData(email);  
+            if(result == null)
+            {
+                return BadRequest("Email is incorrect or not found !!!");
+            }
+            return Ok(result);
+
+        }
+
+
+        [HttpPost("ForgotPassword/{email}")]
+        public async Task<IActionResult> ForgotPassword (string email)
+        {
+            if(string.IsNullOrEmpty(email))
+            {
+                return NotFound(email);
+            }
+            var result = await _userService.ForgotPasswordAsync(email); 
+            if(result.IsAuthenticated)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
 
         //[HttpPost("CreateRole")]

@@ -5,6 +5,7 @@ using Ecommerce.Models;
 using Ecommerce.Repositories;
 using Ecommerce.Repositories.IRepository;
 using Ecommerce.Services;
+using Ecommerce.Settings;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -17,8 +18,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPayment, Payment>();
+builder.Services.AddScoped<IMailingService, MailingService>();
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
+
 
 builder.Services.AddAuthentication(f =>
 {

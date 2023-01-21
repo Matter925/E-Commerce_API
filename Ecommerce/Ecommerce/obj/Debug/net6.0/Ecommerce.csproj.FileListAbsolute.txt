@@ -138,3 +138,7 @@ E:\Level 4\ECom\Project\Ecommerce\Ecommerce\obj\Debug\net6.0\Ecommerce.genruntim
 E:\Level 4\ECom\Project\Ecommerce\Ecommerce\obj\Debug\net6.0\ref\Ecommerce.dll
 E:\Level 4\ECom\Project\Ecommerce\Ecommerce\bin\Debug\net6.0\BouncyCastle.Crypto.dll
 E:\Level 4\ECom\Project\Ecommerce\Ecommerce\bin\Debug\net6.0\System.Configuration.Abstractions.NetStandard.dll
+E:\Level 4\ECom\Project\Ecommerce\Ecommerce\bin\Debug\net6.0\Newtonsoft.Json.dll
+E:\Level 4\ECom\Project\Ecommerce\Ecommerce\bin\Debug\net6.0\MailKit.dll
+E:\Level 4\ECom\Project\Ecommerce\Ecommerce\bin\Debug\net6.0\MimeKit.dll
+E:\Level 4\ECom\Project\Ecommerce\Ecommerce\bin\Debug\net6.0\Microsoft.Extensions.Configuration.NewtonsoftJson.dll

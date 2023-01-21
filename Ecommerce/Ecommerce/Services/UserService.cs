@@ -16,6 +16,8 @@ using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Ecommerce.Data;
 using Ecommerce.Dto;
+using Microsoft.AspNetCore.WebUtilities;
+using Ecommerce.Settings;
 
 namespace Ecommerce.Services
 {
@@ -27,13 +29,15 @@ namespace Ecommerce.Services
         private readonly JWT _jwt;
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
-        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt, IConfiguration configuration , ApplicationDbContext context)
+        private readonly IMailingService _mailingService;
+        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt, IConfiguration configuration , ApplicationDbContext context , IMailingService mailingService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwt = jwt.Value;
             _configuration = configuration;
             _context = context;
+            _mailingService = mailingService;
         }
 
         public async Task<string> AssignRole(AssignRoleDto assignRole)
@@ -269,10 +273,10 @@ namespace Ecommerce.Services
             return true;
         }
 
-        public async Task<AuthModel> ChangePassword(ChangePasswordDto model)
+        public async Task<AuthModel> ChangePassword(string email ,ChangePasswordDto model )
         {
             var authModel = new AuthModel();
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(email);
             if(user == null || !await _userManager.CheckPasswordAsync(user, model.CurrentPassword))
             {
                 authModel.Message = "Email or Current Password is incorrect !";
@@ -357,6 +361,21 @@ namespace Ecommerce.Services
             }
             return null;
         }
+        public async Task<UpdateProfileDto> GetProfileData(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return null;
+            }
+            return new UpdateProfileDto
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address,
+            };
+        }
 
         public async Task<GetUserDto> GetUser(string email)
         {
@@ -375,6 +394,28 @@ namespace Ecommerce.Services
                 Address = user.Address,
             };
 
+
+        }
+
+        public async Task<AuthModel> ForgotPasswordAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null) return new AuthModel
+            {
+                Message ="Email is incorrect or not found !!",
+                IsAuthenticated = false,
+            };
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = Encoding.UTF8.GetBytes(token);
+            var validToken = WebEncoders.Base64UrlEncode(encodedToken);
+            string url = $"{_configuration["AppUrl"]}/ResetPassword?email={email}&token={validToken}";
+            
+            await _mailingService.SendEmailAsync(email, "Reset Password", "<h1>Follow the instructions to reset your password</h1>" + $"<p>To reset your password <a href='{url}'>Click here<a/></p>");
+            return new AuthModel
+            {
+                IsAuthenticated = true,
+                Message ="Reset password URL sent to the email successfully !!",
+            };
 
         }
     }

@@ -8,11 +8,14 @@ namespace Ecommerce.Services
     {
         Task<AuthModel> RegisterAsync(RegisterDto register);
         Task<AuthModel> UpdateProfile(string email, UpdateProfileDto upProfile);
+        Task<UpdateProfileDto> GetProfileData(string email);
         Task<GetUserDto> GetUser(string email);
         Task<AuthModel> LoginAsync(LoginDto login);
-        Task<AuthModel> ChangePassword(ChangePasswordDto model);
+        Task<AuthModel> ChangePassword(string email, ChangePasswordDto model);
+        Task<AuthModel> ForgotPasswordAsync(string email);
         Task<string> AssignRole(AssignRoleDto assignRole);
         Task<AuthModel> RefreshTokenAsync(string token);
         Task<bool> RevokeTokenAsync(string token);
+        
     }
 }
