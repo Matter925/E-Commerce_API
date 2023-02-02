@@ -18,7 +18,7 @@ namespace Ecommerce.Controllers
         public async Task<IActionResult> SendMail([FromForm] MailDto mailDto)
         {
             await _mailingService.SendEmailAsync(mailDto.ToEmail , mailDto.Subject , mailDto.Body , mailDto.Attachments);
-            return Ok();
+            return Ok("The email Send successfully.");
         }
         [HttpPost("WelcomeEmail")]
         public async Task<IActionResult> SendWelcomeMail([FromBody] WelcomeMailDto mailDto)
@@ -29,7 +29,7 @@ namespace Ecommerce.Controllers
             str.Close();
             mailText = mailText.Replace("[username]", mailDto.UserName).Replace("[email]",mailDto.Email);
             await _mailingService.SendEmailAsync(mailDto.Email, "Welcome to our website ", mailText);
-            return Ok();
+            return Ok("The Welcome email Send successfully.");
         }
     }
 }

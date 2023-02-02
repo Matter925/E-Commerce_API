@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "I1ITbHySP6gRF6IJzZ9ZxKY52hAeIQItOx4INHZF7mE7szCnrpPzbh/pieWZM6BgKf2IJ2v1+4zJ6omSgAcXqQ==",
+  "dgSpecHash": "jpwcW9JVjq4RGGS9d8fb4/yardiGsUaLpM/fb3yJTkUpSLhYOzmAfet8DBXjh6ChJFCFU9p2lzfm4I5R5QEkoQ==",
   "success": true,
-  "projectFilePath": "E:\\Level 4\\ECom\\Project\\Ecommerce\\Ecommerce\\Ecommerce.csproj",
+  "projectFilePath": "E:\\Level 4\\Term1\\ECom\\Project\\Ecommerce\\Ecommerce\\Ecommerce.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\MATTER\\.nuget\\packages\\bouncycastle.netcore\\1.9.0\\bouncycastle.netcore.1.9.0.nupkg.sha512",
     "C:\\Users\\MATTER\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",

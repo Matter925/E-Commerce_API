@@ -18,6 +18,7 @@ using Ecommerce.Data;
 using Ecommerce.Dto;
 using Microsoft.AspNetCore.WebUtilities;
 using Ecommerce.Settings;
+using Ecommerce.Dto.UserAuthDto;
 
 namespace Ecommerce.Services
 {
@@ -405,18 +406,42 @@ namespace Ecommerce.Services
                 Message ="Email is incorrect or not found !!",
                 IsAuthenticated = false,
             };
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var encodedToken = Encoding.UTF8.GetBytes(token);
-            var validToken = WebEncoders.Base64UrlEncode(encodedToken);
-            string url = $"{_configuration["AppUrl"]}/ResetPassword?email={email}&token={validToken}";
             
-            await _mailingService.SendEmailAsync(email, "Reset Password", "<h1>Follow the instructions to reset your password</h1>" + $"<p>To reset your password <a href='{url}'>Click here<a/></p>");
+            
+            Random rnd = new Random();
+            var randomNum = (rnd.Next(100000, 999999)).ToString();
+            string message = "Hi " + user.FirstName + " your verify code is " + randomNum;
+           await _mailingService.SendEmailAsync(user.Email ,"Verify Email" , message ,null);
+            var Vcode = new VerifyCode
+            {
+                Code =randomNum,
+                UserId = user.Id,
+            };
+            await _context.VerifyCodes.AddAsync(Vcode);
+            _context.SaveChanges();
             return new AuthModel
             {
                 IsAuthenticated = true,
-                Message ="Reset password URL sent to the email successfully !!",
+                Message ="Verify code sent to the email successfully !!",
             };
 
+        }
+
+        public async Task<bool> VerifyCodeAsync(VerifyCodeDto codeDto)
+        {
+            var user = await _userManager.FindByEmailAsync(codeDto.email);
+            if (user == null) 
+            {
+                return false;
+            };
+            var result = await _context.VerifyCodes.SingleOrDefaultAsync(r => r.UserId == user.Id);
+            if(result.Code == codeDto.Code)
+            {
+                 _context.VerifyCodes.Remove(result);
+                _context.SaveChanges();
+                return true;
+            }
+            return false;
         }
     }
 }
