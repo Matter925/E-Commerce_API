@@ -1,4 +1,6 @@
 ﻿using Ecommerce.Data;
+using Ecommerce.Dto;
+using Ecommerce.Dto.ReturnDto;
 using Ecommerce.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,19 +17,52 @@ namespace Ecommerce.Repositories.IRepository
             _context = context;
         }
 
-        public async Task<Category> Add(Category category)
+        public async Task<GeneralRetDto> Add(CategoryDto dto)
         {
-             await _context.Categories.AddAsync(category);
-            _context.SaveChanges();
-            return category;
-            
+            var IsExist = await _context.Categories.Where(c => c.Name == dto.Name).FirstOrDefaultAsync();
+            if(IsExist == null)
+            {
+                var category = new Category
+                {
+                    Name = dto.Name,
+                    ImageURL = dto.ImageURL,
+                    IsActive = dto.IsActive,
+                };
+                await _context.Categories.AddAsync(category);
+                _context.SaveChanges();
+                return new GeneralRetDto
+                {
+                    Success = true,
+                    Message = "Successfully"
+                };
+            }
+            return new GeneralRetDto
+            {
+                Success = false,
+                Message = "The Category is already exist"
+            };
+
+
         }
 
-        public async Task<Category> Delete(Category category)
+        public async Task<GeneralRetDto> Delete(int id)
         {
-            _context.Categories.Remove(category);
+            var categoty = await _context.Categories.FindAsync(id);
+            if (categoty == null)
+            {
+                return new GeneralRetDto
+                {
+                    Success = false,
+                    Message = $"No category was found with ID: {id}",
+                };
+            }
+            _context.Remove(categoty);
             _context.SaveChanges();
-            return category;
+            return new GeneralRetDto
+            {
+                Success = true,
+                Message = "Successfully Deleted"
+            };
         }
 
         public async Task<Category> GetById(int id)
@@ -42,11 +77,29 @@ namespace Ecommerce.Repositories.IRepository
         }
 
        
-        public async Task<Category> Update(Category category)
+        public async Task<GeneralRetDto> Update(int id , CategoryDto dto )
         {
-             _context.Categories.Update(category);
-            _context.SaveChanges();
-            return category;
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
+            {
+                return new GeneralRetDto
+                {
+                    Success = false,
+                    Message = $"No category was found with ID: {id}",
+                };
+            }
+            category.Name = dto.Name;
+            category.ImageURL = dto.ImageURL;
+            category.IsActive = dto.IsActive;
+            
+            _context.Categories.Update(category);
+            _context.SaveChanges(true);
+
+            return new GeneralRetDto
+            {
+                Success = true,
+                Message = "Successfully Updated",
+            };
         }
     }
 }

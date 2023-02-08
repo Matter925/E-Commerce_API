@@ -16,7 +16,7 @@ using Ecommerce.Dto.UserAuthDto;
 namespace Ecommerce.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class AuthUserController : ControllerBase
     {

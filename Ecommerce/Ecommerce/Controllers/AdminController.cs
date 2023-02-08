@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Ecommerce.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     public class AdminController : ControllerBase
     {
@@ -17,26 +18,12 @@ namespace Ecommerce.Controllers
             _userService = userService;
         }
 
-        //[HttpPost("CreateRole")]
-        //public async Task<IActionResult> CreateRole(CreateRoleDto createRole)
-        //{
-
-        //    var result = await _roleManager.CreateAsync(new IdentityRole
-        //    {
-
-        //        Name = createRole.RoleName
-        //    }) ;
-
-        //    if (result.Succeeded)
-        //    {
-        //        return Ok("New Role Created");
-        //    }
-        //    else
-        //    {
-        //        return BadRequest(result.Errors);
-        //    }
-        //}
-        [Authorize(Roles = "Admin")]
+        [HttpGet("GetRoles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            var result = await _userService.GetRoles();
+            return Ok(result);
+        }
         [HttpPost("AssignRole")]
         public async Task<IActionResult> AssignRole(AssignRoleDto assignRole)
         {
@@ -45,15 +32,29 @@ namespace Ecommerce.Controllers
 
             var result = await _userService.AssignRole(assignRole);
 
-            if (!string.IsNullOrEmpty(result))
-                return BadRequest(result);
+            if (result.Success)
+                return Ok(result);
 
-            return Ok(assignRole);
+            return BadRequest(result);
 
 
         }
-        
 
-        
+        [HttpPost("CreateRole")]
+        public async Task<IActionResult> CreateRole(CreateRoleDto createRole)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _userService.CreateRole(createRole);
+
+            if (result.Success)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+
+
     }
 }

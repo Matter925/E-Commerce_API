@@ -2,12 +2,14 @@
 using Ecommerce.Dto.UserAuthDto;
 using Ecommerce.Models;
 using Ecommerce.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ProfileSettingController : ControllerBase
     {
@@ -17,16 +19,7 @@ namespace Ecommerce.Controllers
         {
             _userService = userService;
         }
-        //[HttpGet("GetUserData/{email}")]
-        //public async Task<IActionResult> GetUser(string email)
-        //{
-        //    var user = await _userService.GetUser(email);
-        //    if (user.isNotNull)
-        //    {
-        //        return Ok(user);
-        //    }
-        //    return NotFound("Email is incorrect or not found !!");
-        //}
+        
 
         [HttpPost("ChangePassword/{email}")]
         public async Task<IActionResult> ChangePassword(string email, ChangePasswordDto model)
@@ -38,6 +31,19 @@ namespace Ecommerce.Controllers
             if (!result.IsAuthenticated)
                 return BadRequest(result.Message);
             return Ok(result);
+        }
+
+
+        [HttpGet("GetProfileToUpdate/{email}")]
+        public async Task<IActionResult> GetProfileData(string email)
+        {
+            var result = await _userService.GetProfileData(email);
+            if (result == null)
+            {
+                return BadRequest("Email is incorrect or not found !!!");
+            }
+            return Ok(result);
+
         }
 
         [HttpPost("UpdateProfile/{email}")]
@@ -56,28 +62,18 @@ namespace Ecommerce.Controllers
             return NotFound("Email is incorrect or not found !!");
 
         }
-        [HttpGet("GetProfileToUpdate/{email}")]
-        public async Task<IActionResult> GetProfileData(string email)
-        {
-            var result = await _userService.GetProfileData(email);
-            if (result == null)
-            {
-                return BadRequest("Email is incorrect or not found !!!");
-            }
-            return Ok(result);
-
-        }
-
+        
 
         [HttpPost("ForgotPassword/{email}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(string email)
         {
-            if (string.IsNullOrEmpty(email))
+            if(string.IsNullOrEmpty(email))
             {
                 return NotFound(email);
             }
             var result = await _userService.ForgotPasswordAsync(email);
-            if (result.IsAuthenticated)
+            if (result.Success)
             {
                 return Ok(result);
             }
@@ -85,19 +81,41 @@ namespace Ecommerce.Controllers
         }
 
         [HttpPost("VerifyCode")]
+        [AllowAnonymous]
         public async Task<IActionResult> VerifyCode(VerifyCodeDto codeDto)
         {
             if (ModelState.IsValid)
             {
                 var result = await _userService.VerifyCodeAsync(codeDto);
-                if (result)
+                if (result.Success)
                 {
-                    return Ok("Verify Code Successfully ");
+                    return Ok(result);
 
                 }
-                return NotFound("Email or Verify Code is incorrect");
+                return NotFound(result);
             }
             return BadRequest(ModelState);
+        }
+
+        [HttpPost("CreateNewPassword/{email}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateNewPassword(string email, CreatePasswordDto model)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest("Email should not be null");
+            }
+            if (ModelState.IsValid)
+            {
+                var result = await _userService.CreateNewPassword(email, model);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
+            return BadRequest(ModelState);
+
         }
 
     }

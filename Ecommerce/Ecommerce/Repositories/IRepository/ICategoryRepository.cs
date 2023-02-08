@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Dto;
+using Ecommerce.Dto.ReturnDto;
 using Ecommerce.Models;
 
 namespace Ecommerce.Repositories.IRepository
@@ -8,9 +9,9 @@ namespace Ecommerce.Repositories.IRepository
         Task<IEnumerable<Category>> GetCategories();
         
         Task<Category> GetById(int id);
-        Task<Category> Add(Category category);
-        Task<Category> Update(Category category);
-        Task<Category> Delete(Category category);
+        Task<GeneralRetDto> Add(CategoryDto dto);
+        Task<GeneralRetDto> Update(int id , CategoryDto category);
+        Task<GeneralRetDto> Delete(int id);
 
 
 
