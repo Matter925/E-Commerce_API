@@ -1,15 +1,16 @@
 ﻿using Ecommerce.Dto;
+using Ecommerce.Dto.ReturnDto;
 using Ecommerce.Models;
 
 namespace Ecommerce.Repositories.IRepository
 {
     public interface IFavoriteItemRepository
     {
-        Task<FavoriteItem> AddItem(FavoriteItemAddDto favoriteItemAddDto);
+        Task<GeneralRetDto> AddItem(FavoriteItemAddDto dto);
 
-        Task<FavoriteItem> DeleteItem(int favoriteItemId);
-        Task<IEnumerable<FavoriteItem>> DeleteAll(int favoriteId);
+        Task<GeneralRetDto> DeleteItem(int favoriteItemId);
+        Task<GeneralRetDto> DeleteAll(int favoriteId);
 
-        Task<IEnumerable<FavoriteItem>> GetItems(string userId);
+        Task<IEnumerable<FavoriteItem>> GetItems(int favoriteId);
     }
 }

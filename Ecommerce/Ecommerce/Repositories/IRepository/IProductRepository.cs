@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Dto;
+using Ecommerce.Dto.ReturnDto;
 using Ecommerce.Models;
 
 namespace Ecommerce.Repositories
@@ -7,11 +8,11 @@ namespace Ecommerce.Repositories
     {
         Task<IEnumerable<Product>> Search( string Name);
         Task<IEnumerable<Product>> GetProducts();
-        Task<IEnumerable<Product>> GetProductsByCategory(int categoryId);
+        Task<IEnumerable<Product>> GetByCategoryID(int categoryId);
         Task<Product> GetById(int id);
-        Task<Product> Add(Product product);
-       Task<Product> Update(Product product);
-        Task<Product> Delete(Product product);
+        Task<GeneralRetDto> Add(ProductDto dto);
+       Task<GeneralRetDto> Update(int id, ProductDto dto);
+        Task<GeneralRetDto> Delete(int id);
 
 
 

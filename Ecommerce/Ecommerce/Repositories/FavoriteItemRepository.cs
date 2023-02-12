@@ -1,5 +1,6 @@
 ﻿using Ecommerce.Data;
 using Ecommerce.Dto;
+using Ecommerce.Dto.ReturnDto;
 using Ecommerce.Models;
 using Ecommerce.Repositories.IRepository;
 using Microsoft.EntityFrameworkCore;
@@ -15,26 +16,31 @@ namespace Ecommerce.Repositories
             _context = context;
         }
 
-        public async Task<FavoriteItem> AddItem(FavoriteItemAddDto favoriteItemAddDto)
+        public async Task<GeneralRetDto> AddItem(FavoriteItemAddDto dto)
         {
-            if (await FavoriteItemExists(favoriteItemAddDto.FavoriteId, favoriteItemAddDto.ProductId) == false)
+            if (await FavoriteItemExists(dto.FavoriteId, dto.ProductId) == false)
             {
-                var item = await(from product in _context.Products
-                                 where product.Id == favoriteItemAddDto.ProductId
-                                 select new FavoriteItem
-                                 {
-                                     FavoriteId = favoriteItemAddDto.FavoriteId,
-                                     ProductId = product.Id,
-                                     
-                                 }).SingleOrDefaultAsync();
-                if (item != null)
+                var item = new FavoriteItem
                 {
-                    var result = await _context.FavoriteItems.AddAsync(item);
-                    await _context.SaveChangesAsync();
-                    return result.Entity;
-                }
+                    FavoriteId = dto.FavoriteId,
+                    ProductId = dto.ProductId,
+
+                };
+                
+                await _context.FavoriteItems.AddAsync(item);
+                await _context.SaveChangesAsync();
+                return new GeneralRetDto
+                {
+                    Success = true,
+                    Message = "Successfully Add"
+                };
             }
-            return null;
+            return new GeneralRetDto
+            {
+                Success = false,
+                Message = "Item already add"
+            };
+            ;
         }
 
         private async Task<bool> FavoriteItemExists(int favoriteId, int productId)
@@ -43,24 +49,33 @@ namespace Ecommerce.Repositories
 
         }
 
-        public async Task<IEnumerable<FavoriteItem>> DeleteAll(int favoriteId)
+        public async Task<GeneralRetDto> DeleteAll(int favoriteId)
         {
+            var Exist = await _context.Favorites.FindAsync(favoriteId);
+            if (Exist == null)
+            {
+                return new GeneralRetDto
+                {
+                    Success = false,
+                    Message = "Favorite Id is not found !!"
+                };
+            }
             var item = await _context.FavoriteItems.Where(e => e.FavoriteId == favoriteId).ToListAsync();
 
-            if (item.Any())
+            foreach (var ex in item)
             {
-                foreach (var ex in item)
-                {
-                    _context.FavoriteItems.Remove(ex);
-                }
-                await _context.SaveChangesAsync();
-                return item;
+                _context.FavoriteItems.Remove(ex);
             }
+            await _context.SaveChangesAsync();
+            return new GeneralRetDto
+            {
+                Success = true,
+                Message = "Successfully Deleted Items"
+            };
 
-            return null;
         }
 
-        public async Task<FavoriteItem> DeleteItem(int favoriteItemId)
+        public async Task<GeneralRetDto> DeleteItem(int favoriteItemId)
         {
             var item = await _context.FavoriteItems.FindAsync(favoriteItemId);
 
@@ -68,29 +83,31 @@ namespace Ecommerce.Repositories
             {
                 _context.FavoriteItems.Remove(item);
                 await _context.SaveChangesAsync();
+                return new GeneralRetDto
+                {
+                    Success = true,
+                    Message = "Successfully Deleted Item"
+                };
             }
 
-            return item;
+            return new GeneralRetDto
+            {
+                Success = false,
+                Message = "Item Id is not found !!"
+            };
         }
 
-        public async Task<IEnumerable<FavoriteItem>> GetItems(string userId)
+        public async Task<IEnumerable<FavoriteItem>> GetItems(int favoriteId)
         {
-            return await (from favorite in _context.Favorites
-                          join favoriteItem in _context.FavoriteItems
-                          on favorite.Id equals favoriteItem.FavoriteId
-                          where favorite.UserId == userId
-                          select new FavoriteItem
-                          {
-                              Id = favoriteItem.Id,
-                              ProductId = favoriteItem.ProductId,
-                              FavoriteId = favoriteItem.FavoriteId
-                          }).ToListAsync();
+            var IsExist = await _context.Favorites.FindAsync(favoriteId);
+            if (IsExist != null)
+            {
+                var Items = await _context.FavoriteItems.Include(c => c.Product).Where(o => o.FavoriteId == favoriteId).ToListAsync();
+                return Items;
+            }
+            return null;
+            
         }
-
-
-
-
-
 
     }
 }

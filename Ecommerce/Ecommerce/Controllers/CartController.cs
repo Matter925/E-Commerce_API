@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CartController : ControllerBase
@@ -19,179 +19,82 @@ namespace Ecommerce.Controllers
             _cartRepository = cartRepository;
             _productRepository = productRepository;
         }
-        [Authorize]
-        [HttpGet]
-        [Route("GetItems/{userId}")]
-        public async Task<ActionResult<IEnumerable<CartItemDto>>> GetItems(string userId)
+       
+        [HttpGet("GetItems/{CartId}")]
+        public async Task<ActionResult> GetItems(int CartId)
         {
-            var cartItems = await _cartRepository.GetItems(userId);
-
+            var cartItems = await _cartRepository.GetItems(CartId);
             if (cartItems == null)
             {
                 return NoContent();
             }
-
-            var products = await _productRepository.GetProducts();
-
-            return (from cartItem in cartItems
-                    join product in products
-                    on cartItem.ProductId equals product.Id
-                    select new CartItemDto
-                    {
-                        Id = cartItem.Id,
-                        ProductId = cartItem.ProductId,
-                        ProductName = product.Name,
-                        ProductDescription = product.Description,
-                        ProductImageURL = product.ImageURL,
-                        Price = product.Price,
-                        CartId = cartItem.CartId,
-                        Qty = cartItem.Qty,
-                        TotalPrice = product.Price * cartItem.Qty
-                    }).ToList();
-
-
+            return Ok(cartItems);
         }
-        [Authorize]
-        [HttpGet("GetItem/{cartItemId}")]
-        public async Task<ActionResult<CartItemDto>> GetItem(int cartItemId)
+        
+        [HttpGet("GetItem/{ItemId}")]
+        public async Task<ActionResult> GetItem(int ItemId)
         {
-
-            var cartItem = await _cartRepository.GetItem(cartItemId);
+            var cartItem = await _cartRepository.GetItem(ItemId);
             if (cartItem == null)
             {
-                return NotFound();
+                return NotFound("The Item Id Not Found !! ");
             }
-            var product = await _productRepository.GetById(cartItem.ProductId);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return new CartItemDto
-            {
-                Id = cartItem.Id,
-                ProductId = cartItem.ProductId,
-                ProductName = product.Name,
-                ProductDescription = product.Description,
-                ProductImageURL = product.ImageURL,
-                Price = product.Price,
-                CartId = cartItem.CartId,
-                Qty = cartItem.Qty,
-                TotalPrice = product.Price * cartItem.Qty
-            };
-
-
+            return Ok(cartItem);
         }
-        [Authorize]
+        
         [HttpPost("AddItem")]
-        public async Task<ActionResult<CartItemDto>> AddItem([FromBody] CartItemAddDto cartItemAddDto)
+        public async Task<ActionResult> AddItem([FromBody] CartItemAddDto cartItemAddDto)
         {
-           var newCartItem = await _cartRepository.AddItem(cartItemAddDto);
-
-            if (newCartItem == null)
+            if(ModelState.IsValid)
             {
-                return NoContent();
+                var newCartItem = await _cartRepository.AddItem(cartItemAddDto);
+
+                if (newCartItem.Success)
+                {
+                    return Ok(newCartItem);
+                }
+                return BadRequest(newCartItem);
             }
-
-            var product = await _productRepository.GetById(newCartItem.ProductId);
-
-            if (product == null)
-            {
-            return BadRequest("Product Not Found");
-            }
-
-            return new CartItemDto
-            {
-                Id = newCartItem.Id,
-                ProductId = newCartItem.ProductId,
-                ProductName = product.Name,
-                ProductDescription = product.Description,
-                ProductImageURL = product.ImageURL,
-                Price = product.Price,
-                CartId = newCartItem.CartId,
-                Qty = newCartItem.Qty,
-                TotalPrice = product.Price * newCartItem.Qty
-            };
-
-
-
+            return BadRequest(ModelState);
         }
-        [Authorize]
-        [HttpDelete("DeleteItem/{cartItemId}")]
-        public async Task<ActionResult<CartItemDto>> DeleteItem(int cartItemId)
-
+        
+        [HttpDelete("DeleteItem/{ItemId}")]
+        public async Task<ActionResult<CartItemDto>> DeleteItem(int ItemId)
         {
-
-            var cartItem = await _cartRepository.DeleteItem(cartItemId);
-
-            if (cartItem == null)
+            var result = await _cartRepository.DeleteItem(ItemId);
+            if (result.Success)
             {
-                return NotFound();
+                return Ok(result);
             }
+            return NotFound(result);
 
-            var product = await this._productRepository.GetById(cartItem.ProductId);
-
-            if (product == null)
-                return NotFound();
-
-            return new CartItemDto
-            {
-                Id = cartItem.Id,
-                ProductId = cartItem.ProductId,
-                ProductName = product.Name,
-                ProductDescription = product.Description,
-                ProductImageURL = product.ImageURL,
-                Price = product.Price,
-                CartId = cartItem.CartId,
-                Qty = cartItem.Qty,
-                TotalPrice = product.Price * cartItem.Qty
-
-            };
         }
          [HttpDelete("DeleteAll/{cartId}")]
-        public async Task<ActionResult<CartItemDto>> DeleteAll(int cartId)
+        public async Task<ActionResult> DeleteAll(int cartId)
         {
 
-                var cartItem = await _cartRepository.DeleteAll(cartId);
+          var result = await _cartRepository.DeleteAll(cartId);
 
-                if (cartItem == null)
-                {
-                return BadRequest("Wrong thing");
-                
-               
-                }
-            return Ok("Items successfully deleted");
-
-        }
-        [Authorize]
-        [HttpPut("UpdateQtyItem")]
-        public async Task<ActionResult<CartItemDto>> UpdateQty(CartItemQtyUpdateDto cartItemQtyUpdateDto)
-        {
-           
-                var cartItem = await _cartRepository.UpdateQty(cartItemQtyUpdateDto);
-                if (cartItem == null)
-                {
-                    return NotFound();
-                }
-
-                var product = await _productRepository.GetById(cartItem.ProductId);
-
-            return new CartItemDto
+            if(result.Success)
             {
-                Id = cartItem.Id,
-                ProductId = cartItem.ProductId,
-                ProductName = product.Name,
-                ProductDescription = product.Description,
-                ProductImageURL = product.ImageURL,
-                Price = product.Price,
-                CartId = cartItem.CartId,
-                Qty = cartItem.Qty,
-                TotalPrice = product.Price * cartItem.Qty
-
-            };
-
-
-
+                return Ok(result);
+            }
+            return NotFound(result);
+        }
+        
+        [HttpPut("UpdateQtyItem")]
+        public async Task<ActionResult> UpdateQty(CartItemQtyUpdateDto dto)
+        {
+            if(ModelState.IsValid)
+            {
+                var result = await _cartRepository.UpdateQty(dto);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return NotFound(result);
+            }
+            return BadRequest(ModelState);
         }
 
     }

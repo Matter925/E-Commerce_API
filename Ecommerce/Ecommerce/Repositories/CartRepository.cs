@@ -1,5 +1,6 @@
 ﻿using Ecommerce.Data;
 using Ecommerce.Dto;
+using Ecommerce.Dto.ReturnDto;
 using Ecommerce.Models;
 using Ecommerce.Repositories.IRepository;
 using Microsoft.EntityFrameworkCore;
@@ -19,100 +20,119 @@ namespace Ecommerce.Repositories
                                                                      c.ProductId == productId);
 
         }
-        public async Task<CartItem> AddItem(CartItemAddDto cartItemAddDto)
+        public async Task<GeneralRetDto> AddItem(CartItemAddDto dto)
         {
-            if (await CartItemExists(cartItemAddDto.CartId, cartItemAddDto.ProductId) == false)
+            if (await CartItemExists(dto.CartId, dto.ProductId) == false)
             {
-                var item = await (from product in _context.Products
-                                  where product.Id == cartItemAddDto.ProductId
-                                  select new CartItem
-                                  {
-                                      CartId = cartItemAddDto.CartId,
-                                      ProductId = product.Id,
-                                      Qty = cartItemAddDto.Qty
-                                  }).SingleOrDefaultAsync();
-                if (item != null)
+                var item = new CartItem
                 {
-                    var result = await _context.CartItems.AddAsync(item);
-                    await _context.SaveChangesAsync();
-                    return result.Entity;
-                }
+                    CartId = dto.CartId,
+                    ProductId = dto.ProductId,
+                    Qty = dto.Qty
+                };
+                
+                await _context.CartItems.AddAsync(item);
+                await _context.SaveChangesAsync();
+                return new GeneralRetDto { 
+                    Success =true,
+                    Message ="Successfully Add"
+                };  
             }
-            return null;
+            return new GeneralRetDto
+            {
+                Success = false,
+                Message = "Item already add"
+            }; 
         }
 
-        public async Task<CartItem> DeleteItem(int cartItemId)
+        public async Task<GeneralRetDto> DeleteItem(int ItemId)
         {
-            var item = await _context.CartItems.FindAsync(cartItemId);
+            var item = await _context.CartItems.FindAsync(ItemId);
 
             if (item != null)
             {
                 _context.CartItems.Remove(item);
                 await _context.SaveChangesAsync();
+                return new GeneralRetDto
+                {
+                    Success = true,
+                    Message = "Successfully Deleted"
+                };
             }
 
-            return item;
+            return new GeneralRetDto { 
+                Success =false,
+                Message = "Item Id is not found !!"
+            };
         }
 
-        public async Task<CartItem> GetItem(int cartItemId)
+        public async Task<CartItem> GetItem(int ItemId)
         {
-            return await(from cart in _context.Carts
-                         join cartItem in _context.CartItems
-                         on cart.Id equals cartItem.CartId
-                         where cartItem.Id == cartItemId
-                         select new CartItem
-                         {
-                             Id = cartItem.Id,
-                             ProductId = cartItem.ProductId,
-                             Qty = cartItem.Qty,
-                             CartId = cartItem.CartId
-                         }).SingleOrDefaultAsync();
+            var IsExist = await _context.CartItems.FindAsync(ItemId);
+            if (IsExist == null)
+            {
+                return null;
+            }
+            var Item = await _context.CartItems.Include(c => c.Product).SingleOrDefaultAsync(r => r.Id == ItemId);
+            return Item;
         }
 
-        public async Task<IEnumerable<CartItem>> GetItems(string userId)
+        public async Task<IEnumerable<CartItem>> GetItems(int CartId)
         {
-            return await(from cart in _context.Carts
-                         join cartItem in _context.CartItems
-                         on cart.Id equals cartItem.CartId
-                         where cart.UserId == userId
-                         select new CartItem
-                         {
-                             Id = cartItem.Id,
-                             ProductId = cartItem.ProductId,
-                             Qty = cartItem.Qty,
-                             CartId = cartItem.CartId
-                         }).ToListAsync();
+            var IsExist = await _context.Carts.FindAsync(CartId);
+            if (IsExist == null)
+            {
+                return null;
+            }
+            var Items = await _context.CartItems.Include(c => c.Product).Where(o => o.CartId == CartId).ToListAsync();
+            return Items;
         }
 
-        public async Task<CartItem> UpdateQty(CartItemQtyUpdateDto cartItemQtyUpdateDto)
+        public async Task<GeneralRetDto> UpdateQty(CartItemQtyUpdateDto dto)
         {
-            var item = await _context.CartItems.FindAsync(cartItemQtyUpdateDto.CartItemId);
+            var item = await _context.CartItems.FindAsync(dto.CartItemId);
 
             if (item != null)
             {
-                item.Qty = cartItemQtyUpdateDto.Qty;
+                item.Qty = dto.Qty;
                 await _context.SaveChangesAsync();
-                return item;
+                return new GeneralRetDto
+                {
+                    Success =true,
+                    Message= "Successfully Updated"
+                };
             }
 
-            return null;
+            return new GeneralRetDto
+            {
+                Success = false,
+                Message = "Item Id is not found !!"
+            };
         }
 
-        public async Task<IEnumerable<CartItem>> DeleteAll(int cartId)
+        public async Task<GeneralRetDto> DeleteAll(int cartId)
         {
-            var item = await _context.CartItems.Where(e => e.CartId == cartId).ToListAsync();
-
-            if (item.Any() )
+            var Exist = await _context.Carts.FindAsync(cartId);
+            if (Exist == null)
             {
-                foreach (var ex in item)
+                return new GeneralRetDto
                 {
-                    _context.CartItems.Remove(ex);
-                }
-                await _context.SaveChangesAsync();
-                return item;
+                    Success = false,
+                    Message = "Cart Id is not found !!"
+                };
             }
+            var items = await _context.CartItems.Where(e => e.CartId == cartId).ToListAsync();
 
-            return null;
+            foreach (var ex in items)
+            {
+                _context.CartItems.Remove(ex);
+            }
+            await _context.SaveChangesAsync();
+            return new GeneralRetDto
+            {
+                Success = true,
+                Message = "Successfully Deleted Items"
+            };
 
         }
     }

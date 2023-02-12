@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Ecommerce.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -18,85 +19,71 @@ namespace Ecommerce.Controllers
             _productRepository = productRepository;
         }
 
-        [HttpGet]
+        [HttpGet("GetProducts")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetProducts()
         {
             var products = await _productRepository.GetProducts();
             return Ok(products);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetProductByID{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var product = await _productRepository.GetById(id);
 
             if (product == null)
-                return NotFound();
+                return NotFound($"No product was found with ID {id} ");
 
             return Ok(product);
         }
 
         [HttpGet("GetByCategoryId/{categoryId}")]
-        public async Task<IActionResult> GetProductsByCatId(int categoryId)
+        public async Task<IActionResult> GetByCategoryId(int categoryId)
         {
-            var products = await _productRepository.GetProductsByCategory(categoryId);
-
+            var products = await _productRepository.GetByCategoryID(categoryId);
 
             return Ok(products);
         }
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
+
+        [HttpPost("AddProduct")]
         public async Task<IActionResult> AddProduct([FromBody] ProductDto dto)
         {
-            if(!ModelState.IsValid)
-                return BadRequest();
-            var product = new Product
+            if (ModelState.IsValid)
             {
-                Name = dto.Name,
-                Price = dto.Price,
-                Description = dto.Description,
-                ImageURL = dto.ImageURL ,
-                CategoryId = dto.CategoryId,
-                
-            };
-            _productRepository.Add(product);
-
-            return Ok(product);
+                var result = await _productRepository.Add(dto);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+            }
+            return BadRequest(ModelState);
         }
-        [Authorize(Roles = "Admin")]
-        [HttpPut("{id}")]
+
+        [HttpPut("UpdateProduct/{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ProductDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
-            var product = await _productRepository.GetById(id);
-
-            if (product == null)
-                return NotFound($"No product was found with ID {id}");
-
-            product.Name = dto.Name;
-            product.Price = dto.Price;
-            product.Description = dto.Description;
-            product.ImageURL = dto.ImageURL;
-            product.CategoryId = dto.CategoryId;
-          
-
-            _productRepository.Update(product);
-
-            return Ok(product);
+            if(ModelState.IsValid)
+            {
+                var result = await _productRepository.Update(id, dto);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return NotFound(result);
+            }
+            return BadRequest(ModelState);
         }
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("DeletProduct/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var product = await _productRepository.GetById(id);
-
-            if (product == null)
-                return NotFound($"No product was found with ID {id}");
-
-            _productRepository.Delete(product);
-
-            return Ok(product);
+            var result = await _productRepository.Delete(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return NotFound(result);
         }
 
         [HttpGet("Search/{name}")]
@@ -110,9 +97,6 @@ namespace Ecommerce.Controllers
             return NotFound();
 
         }
-
-
-
 
 
     }
