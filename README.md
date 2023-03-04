@@ -11,10 +11,12 @@
    - Products operations
    - Favorites operations
    - Cart operations
+   - Orders
   ---------------------------
 - Admin 
   - Add Roles and assign roles for users .
   - Add , delete and update Categories and products .
+  - Manage Orders .
   
 - User
   - login , Register , Update Profile .
@@ -22,3 +24,4 @@
   - Add , delete , update cartItems .
   - Add , delete , FavoriteItems.
   - Payment using visa and masterCard .
+  - Make orders and manage its.
