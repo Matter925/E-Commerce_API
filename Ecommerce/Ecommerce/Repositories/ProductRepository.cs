@@ -59,7 +59,7 @@ namespace Ecommerce.Repositories
                 var product = new Product
                 {
                     Name = dto.Name,
-                    Price = dto.Price,
+                    Price = (double)dto.Price,
                     Description = dto.Description,
                     ImageURL = dto.ImageURL,
                     CategoryId = dto.CategoryId,
@@ -116,7 +116,7 @@ namespace Ecommerce.Repositories
             product.Name = dto.Name;
             product.ImageURL = dto.ImageURL;
             product.Description = dto.Description;
-            product.Price = dto.Price;
+            product.Price = (double)dto.Price;
             product.CategoryId = dto.CategoryId;
             _context.Products.Update(product);
             _context.SaveChanges();

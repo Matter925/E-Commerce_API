@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Dto;
+using Ecommerce.Dto.CartDto;
 using Ecommerce.Dto.ReturnDto;
 using Ecommerce.Models;
 
@@ -11,6 +12,6 @@ namespace Ecommerce.Repositories.IRepository
         Task<GeneralRetDto> DeleteItem(int ItemId);
         Task<GeneralRetDto> DeleteAll(int cartId);
         Task<CartItem> GetItem(int ItemId);
-        Task<IEnumerable<CartItem>> GetItems(int CartId);
+        Task<ItemsCartDto> GetItems(int CartId);
     }
 }

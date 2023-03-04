@@ -1,5 +1,7 @@
 ﻿using Ecommerce.Data;
 using Ecommerce.Dto;
+using Ecommerce.Dto.CartDto;
+
 using Ecommerce.Dto.ReturnDto;
 using Ecommerce.Models;
 using Ecommerce.Repositories.IRepository;
@@ -77,15 +79,26 @@ namespace Ecommerce.Repositories
             return Item;
         }
 
-        public async Task<IEnumerable<CartItem>> GetItems(int CartId)
+        public async Task<ItemsCartDto> GetItems(int CartId)
         {
+            double total = 0;
             var IsExist = await _context.Carts.FindAsync(CartId);
             if (IsExist == null)
             {
                 return null;
             }
-            var Items = await _context.CartItems.Include(c => c.Product).Where(o => o.CartId == CartId).ToListAsync();
-            return Items;
+            var Items = await _context.CartItems.Include(c => c.Product).Include(c => c.Product.Category).Where(o => o.CartId == CartId).ToListAsync();
+            foreach (var Item in Items)
+            {
+                total += Item.Product.Price*(Item.Qty);
+            };
+            return new ItemsCartDto
+            {
+                Items = Items,
+                Count = Items.Count(),
+                Total = total,
+
+            };
         }
 
         public async Task<GeneralRetDto> UpdateQty(CartItemQtyUpdateDto dto)

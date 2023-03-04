@@ -208,15 +208,44 @@ namespace Ecommerce.Services
             await _context.Favorites.AddAsync(addFavorite);
             await _context.Carts.AddAsync(addCart);
             _context.SaveChanges();
+            // ---------------------Send Welcome Mail To User------------------------------------------------------
 
-            
+            var filePath = $"{Directory.GetCurrentDirectory()}\\Templates\\EmailTemplate.html";
+            var str = new StreamReader(filePath);
+            var mailBody = str.ReadToEnd();
+            str.Close();
+            mailBody = mailBody.Replace("[username]", user.FirstName).Replace("[email]", user.Email);
+            var Sendmail = await _mailingService.SendEmailAsync(user.Email, "Welcome to our website ", mailBody);
+
+            //----------------------------------------------------------------------------------------------------------------
+            if (Sendmail.Success)
+            {
+                return new AuthModel
+                {
+                    Message = "User Registered successfully ",
+                    Id = user.Id,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Username = user.UserName,
+                    CartId = user.Cart.Id,
+                    FavoriteId = user.Favorite.Id,
+                    ExpireOn = jwtSecurityToken.ValidTo,
+                    IsAuthenticated = true,
+                    Roles = new List<string> { "User" },
+                    Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                    RefreshToken = refreshToken.Token,
+                    RefreshTokenExpiration = refreshToken.ExpiresOn
+
+                };
+            }
             return new AuthModel
             {
-                Message = "User Registered successfully ",
+                Message = Sendmail.Message,
                 Id = user.Id,
                 Email = user.Email,
-               FirstName = user.FirstName,
-               LastName = user.LastName,    
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Username = user.UserName,
                 CartId = user.Cart.Id,
                 FavoriteId = user.Favorite.Id,
@@ -224,7 +253,7 @@ namespace Ecommerce.Services
                 IsAuthenticated = true,
                 Roles = new List<string> { "User" },
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                RefreshToken = refreshToken.Token ,
+                RefreshToken = refreshToken.Token,
                 RefreshTokenExpiration = refreshToken.ExpiresOn
 
             };
