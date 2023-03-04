@@ -7,11 +7,12 @@
 - Using Repository Pattern .
 - Integration Payment Paymob .
 - It consists of many activities  such as
-   - Categories operations
-   - Products operations
-   - Favorites operations
-   - Cart operations
-   - Orders
+   - Categories operations.
+   - Products operations.
+   - Favorites operations.
+   - Cart operations.
+   - Payment.
+   - Orders.
   ---------------------------
 - Admin 
   - Add Roles and assign roles for users .
