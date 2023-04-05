@@ -20,21 +20,23 @@ using Microsoft.AspNetCore.WebUtilities;
 using Ecommerce.Settings;
 using Ecommerce.Dto.UserAuthDto;
 using Ecommerce.Dto.ReturnDto;
-
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Ecommerce.Services
 {
     
     public class UserService : IUserService
     {
+        private IHostingEnvironment _environment;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWT _jwt;
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
         private readonly IMailingService _mailingService;
-        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt, IConfiguration configuration , ApplicationDbContext context , IMailingService mailingService)
+        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt, IConfiguration configuration , ApplicationDbContext context , IMailingService mailingService , IHostingEnvironment environment)
         {
+            _environment = environment;
             _userManager = userManager;
             _roleManager = roleManager;
             _jwt = jwt.Value;
@@ -209,13 +211,13 @@ namespace Ecommerce.Services
             await _context.Carts.AddAsync(addCart);
             _context.SaveChanges();
             // ---------------------Send Welcome Mail To User------------------------------------------------------
-
-            var filePath = $"{Directory.GetCurrentDirectory()}\\Templates\\EmailTemplate.html";
-            var str = new StreamReader(filePath);
-            var mailBody = str.ReadToEnd();
-            str.Close();
-            mailBody = mailBody.Replace("[username]", user.FirstName).Replace("[email]", user.Email);
-            var Sendmail = await _mailingService.SendEmailAsync(user.Email, "Welcome to our website ", mailBody);
+            //string wwwPath = this._environment.WebRootPath;
+            //var filePath = $"{wwwPath}\\Templates\\EmailTemplate.html";
+            //var str = new StreamReader(filePath);
+            //var mailBody = str.ReadToEnd();
+            //str.Close();
+            //mailBody = mailBody.Replace("[username]", user.FirstName).Replace("[email]", user.Email);
+            var Sendmail = await _mailingService.SendEmailAsync(user.Email, "Welcome to our website ", "jhvhjbhj");
 
             //----------------------------------------------------------------------------------------------------------------
             if (Sendmail.Success)
@@ -257,6 +259,8 @@ namespace Ecommerce.Services
                 RefreshTokenExpiration = refreshToken.ExpiresOn
 
             };
+
+            
         }
 
 

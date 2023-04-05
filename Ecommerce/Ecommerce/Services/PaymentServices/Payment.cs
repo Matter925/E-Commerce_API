@@ -51,7 +51,7 @@ namespace Ecommerce.Services
                             
                         var user = await _context.Carts.Include(c => c.User).SingleOrDefaultAsync(d => d.Id == orderInfo.CartId);
 
-                        await _mailingService.SendEmailAsync(user.User.Email, subject, body);
+                        var sendmail =await _mailingService.SendEmailAsync(user.User.Email, subject, body);
                         await _cartRepository.DeleteAll(user.Id);
                         return new GeneralRetDto
                         {

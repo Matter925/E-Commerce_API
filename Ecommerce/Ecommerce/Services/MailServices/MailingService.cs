@@ -41,11 +41,11 @@ namespace Ecommerce.Services
             email.Body = builder.ToMessageBody();
             email.From.Add(new MailboxAddress(_mailSettings.DisplayName , _mailSettings.Email));
             using var smtp = new SmtpClient();
-            smtp.Connect(_mailSettings.Host , _mailSettings.Port , SecureSocketOptions.StartTls);
-            smtp.Authenticate(_mailSettings.Email, _mailSettings.Password);
-            var maiSend = await smtp.SendAsync(email);
-            if (maiSend.StartsWith("2"))
+            try
             {
+                smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+                smtp.Authenticate(_mailSettings.Email, _mailSettings.Password);
+                await smtp.SendAsync(email);
                 smtp.Disconnect(true);
                 return new GeneralRetDto
                 {
@@ -53,11 +53,15 @@ namespace Ecommerce.Services
                     Message = "Sucess"
                 };
             }
-            return new GeneralRetDto
+            catch (Exception ex)
             {
-                Success = false,
-                Message = "Email Is Not Valid"
-            };
+                return new GeneralRetDto
+                {
+                    Success = false,
+                    Message = "Email Is Not Real"
+                };
+            }
+
         }
     }
 }
